@@ -166,12 +166,12 @@ class FollowViewsTest(TestCase):
             'posts:follow_index'
         )
         cls.PROFILE_UNFOLLOW = reverse(
-                'posts:profile_unfollow',
-                kwargs={'username': cls.post_follower}
+            'posts:profile_unfollow',
+            kwargs={'username': cls.post_follower}
         )
         cls.PROFILE_FOLLOW = reverse(
-                'posts:profile_follow',
-                kwargs={'username': cls.post_follower}
+            'posts:profile_follow',
+            kwargs={'username': cls.post_follower}
         )
 
     def setUp(self):
