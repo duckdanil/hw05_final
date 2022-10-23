@@ -1,19 +1,16 @@
 {% extends 'base.html' %}
 {% block title %}
-Подписки
-{{ title }}
+  Подписки
 {% endblock %}
 {% block content %}
-{% include 'includes/switcher.html' %}
-<div class="container py-5">
-  {% for post in page_obj %}
-<article>
-  {% include 'includes/post.html' %}  
-</article>  
-  {% if not forloop.last %}
-  <hr>
-  {% endif %}
-  {% endfor %} 
+  {% include 'includes/switcher.html' with follow=True %}
+  <div class="container py-5">
+    {% for post in page_obj %}
+      {% include 'posts/includes/post.html' %}  
+      {% if not forloop.last %}
+        <hr>
+      {% endif %}
+    {% endfor %} 
   {% include 'includes/paginator.html' %}
-</div>  
+  </div>  
 {% endblock %}

@@ -1,6 +1,6 @@
 from django.test import TestCase
 
-from ..models import Group, Post, User
+from ..models import Group, Post, User, Comment, Follow
 
 
 class PostModelTest(TestCase):
@@ -36,37 +36,40 @@ class PostModelTest(TestCase):
         }
         for value, expected in field_verboses.items():
             with self.subTest(value=value):
-                verbose_name = self.post._meta.get_field(value).verbose_name
-                self.assertEqual(verbose_name, expected)
-
-    def test_post_help_text(self):
-        """Проверка help_text у post"""
-        field_help_text = {
-            'text': 'Текст поста',
-            'group': 'Группа, к которой относится пост',
-        }
-        for value, expected in field_help_text.items():
-            with self.subTest(value=value):
-                verbose_name = self.post._meta.get_field(value).help_text
+                verbose_name = Post._meta.get_field(value).verbose_name
                 self.assertEqual(verbose_name, expected)
 
     def test_group_verbose_name(self):
         """Проверка verbose_name у group."""
         field_verboses = {
             'title': 'Заголовок',
-            'description': 'Описание группы'
+            'description': 'Описание'
         }
         for value, expected in field_verboses.items():
             with self.subTest(value=value):
-                verbose_name = self.group._meta.get_field(value).verbose_name
+                verbose_name = Group._meta.get_field(value).verbose_name
                 self.assertEqual(verbose_name, expected)
 
-    def test_group_help_text(self):
-        """Проверка help_text у group"""
-        field_help_text = {
-            'title': 'Дайте название группе'
+    def test_comment_verbose_name(self):
+        """Проверка verbose_name у comment."""
+        field_verboses = {
+            'post': 'Пост',
+            'created': 'Дата создания',
+            'author': 'Автор',
+            'text': 'Текст Коментария',
         }
-        for value, expected in field_help_text.items():
+        for value, expected in field_verboses.items():
             with self.subTest(value=value):
-                verbose_name = self.group._meta.get_field(value).help_text
+                verbose_name = Comment._meta.get_field(value).verbose_name
+                self.assertEqual(verbose_name, expected)
+
+    def test_follow_verbose_name(self):
+        """Проверка verbose_name у follow."""
+        field_verboses = {
+            'user': 'Пользователь',
+            'author': 'Автор',
+        }
+        for value, expected in field_verboses.items():
+            with self.subTest(value=value):
+                verbose_name = Follow._meta.get_field(value).verbose_name
                 self.assertEqual(verbose_name, expected)

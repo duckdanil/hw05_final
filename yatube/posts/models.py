@@ -1,5 +1,6 @@
 from django.db import models
 from django.contrib.auth import get_user_model
+from django.db.models import UniqueConstraint
 
 User = get_user_model()
 
@@ -7,13 +8,21 @@ User = get_user_model()
 class Group(models.Model):
     title = models.CharField(
         max_length=200,
-        verbose_name='Заголовок',
-        help_text='Дайте название группе'
+        verbose_name='Заголовок'
     )
-    slug = models.SlugField(unique=True)
+    slug = models.SlugField(
+        max_length=200,
+        unique=True,
+        verbose_name='Короткая ссылка'
+    )
     description = models.TextField(
-        verbose_name='Описание группы'
+        max_length=400,
+        verbose_name='Описание'
     )
+
+    class Meta:
+        verbose_name_plural = 'Группы'
+        verbose_name = 'Группу'
 
     def __str__(self):
         return self.title
@@ -54,6 +63,8 @@ class Post(models.Model):
 
     class Meta:
         ordering = ['-pub_date']
+        verbose_name_plural = 'Посты'
+        verbose_name = 'Пост'
 
 
 class Comment(models.Model):
@@ -68,10 +79,15 @@ class Comment(models.Model):
         related_name='comments',
         verbose_name='Автор')
     text = models.TextField(
-        verbose_name='Коментарий')
+        verbose_name='Текст Коментария')
     created = models.DateTimeField(
         auto_now_add=True,
-        verbose_name='Создан')
+        verbose_name='Дата создания')
+
+    class Meta:
+        ordering = ['-created']
+        verbose_name_plural = 'Коментарии'
+        verbose_name = 'Коментарий'
 
 
 class Follow(models.Model):
@@ -85,3 +101,10 @@ class Follow(models.Model):
         on_delete=models.CASCADE,
         related_name='following',
         verbose_name='Автор')
+
+    class Meta:
+        verbose_name_plural = 'Подписки'
+        verbose_name = 'Подписка'
+        constraints = [
+            UniqueConstraint(fields=['author', 'user'], name='unique_follow')
+        ]

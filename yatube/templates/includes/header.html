@@ -19,8 +19,8 @@
               href="{% url 'about:tech' %}">Технологии</a>
             </li>
             {% if user.is_authenticated %}
-            <li class="nav-item"> 
-              <a class="nav-link {% if request.resolver_match.view_name  == '<!--  -->' %}
+              <li class="nav-item"> 
+                <a class="nav-link {% if request.resolver_match.view_name  == '<!--  -->' %}
               active
             {% endif %}" 
               href="{% url 'posts:post_create' %}">Новая запись</a>
@@ -37,9 +37,13 @@
             {% endif %}" 
               href="{% url 'users:logout' %}">Выйти</a>
             </li>
-            <li>
-              Пользователь: {{ user.username }}
-            </li>
+            <li class="nav-item"> 
+            <a class="nav-link link-light {% if view_name  == 'posts:profile' and author == user %}active{% endif %}" 
+              href="{% url 'posts:profile' user %}"
+              >
+                {{ user.username }}
+            </a>
+          </li>
             {% else %}
             <li class="nav-item"> 
               <a class="nav-link link-light {% if request.resolver_match.view_name  == 'users:login' %}

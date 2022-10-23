@@ -1,18 +1,14 @@
 {% extends 'base.html' %}
-{% block title %}
-{{ title }}
-{% endblock %}
+{% block title %}Последние обновления на сайте{% endblock %}
 {% block content %}
-{% include 'includes/switcher.html' %}
-<div class="container py-5">
-  {% for post in page_obj %}
-<article>
-  {% include 'includes/post.html' %}  
-</article>  
-  {% if not forloop.last %}
-  <hr>
-  {% endif %}
-  {% endfor %} 
-  {% include 'includes/paginator.html' %}
-</div>  
+  {% include 'includes/switcher.html' with index=True %}
+  <div class="container py-5">
+    {% for post in page_obj %}
+      {% include 'posts/includes/post.html' %}  
+      {% if not forloop.last %}
+        <hr>
+      {% endif %}
+    {% endfor %} 
+    {% include 'includes/paginator.html' %}
+  </div>  
 {% endblock %}

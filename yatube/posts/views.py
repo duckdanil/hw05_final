@@ -1,17 +1,16 @@
 from django.contrib.auth.decorators import login_required
-from .utils import get_page_context
 from django.shortcuts import render, get_object_or_404, redirect
-from .models import Post, Group, User, Follow
-from .forms import PostForm, CommentForm
 from django.views.decorators.cache import cache_page
+
+from .forms import PostForm, CommentForm
+from .models import Post, Group, User, Follow
+from .utils import get_page_context
 
 
 @cache_page(20)
 def index(request):
-    title = 'Последние обновления на сайте'
     page_obj = get_page_context(Post.objects.all(), request)
     context = {
-        'title': title,
         'page_obj': page_obj,
     }
     return render(request, 'posts/index.html', context)
@@ -29,17 +28,12 @@ def group_posts(request, slug):
 
 def profile(request, username):
     author = get_object_or_404(User, username=username)
-    post_list = Post.objects.filter(author__username=username)
     page_obj = get_page_context(author.posts.all(), request)
-    posts_count = post_list.count()
-    following = request.user.is_authenticated
-    if following:
-        following = author.following.filter(user=request.user).exists()
-    title = f'Профайл пользователя {username}'
+    following = request.user.is_authenticated and Follow.objects.filter(
+        user=request.user, author=author
+    ).exists()
     context = {
         'author': author,
-        'posts_count': posts_count,
-        'title': title,
         'page_obj': page_obj,
         'following': following,
     }
@@ -48,13 +42,10 @@ def profile(request, username):
 
 def post_detail(request, post_id):
     post = get_object_or_404(Post, id=post_id)
-    comments = post.comments.all()
     form = CommentForm()
     template = 'posts/post_detail.html'
     context = {
         'post': post,
-        'requser': request.user,
-        'comments': comments,
         'form': form,
     }
     return render(request, template, context)
@@ -78,18 +69,12 @@ def post_create(request):
         request.POST or None,
         files=request.FILES or None
     )
-
-    if form.is_valid():
-        create_post = form.save(commit=False)
-        create_post.author = request.user
-        create_post.save()
-        return redirect('posts:profile', create_post.author)
-
-    context = {
-        'form': form
-    }
-
-    return render(request, 'posts/create_post.html', context)
+    if not form.is_valid():
+        return render(request, 'posts/create_post.html', {'form': form})
+    create_post = form.save(commit=False)
+    create_post.author = request.user
+    create_post.save()
+    return redirect('posts:profile', create_post.author)
 
 
 @login_required
@@ -112,7 +97,6 @@ def post_edit(request, post_id):
     context = {
         'form': form,
         'edit_post': edit_post,
-        'is_edit': True
     }
     return render(request, 'posts/create_post.html', context)
 
