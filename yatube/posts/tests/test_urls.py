@@ -14,10 +14,10 @@ UNFOLLOW_USER = reverse('posts:profile_unfollow', args=['auth'])
 POST_CREATE = reverse('posts:post_create')
 GROUP_LIST = reverse('posts:group_list', args=['test_slug'])
 PROFILE = reverse('posts:profile', args=['auth'])
-REDIRECT_LOGIN_POST_CREATE = reverse('users:login')+'?next=' + POST_CREATE
-REDIRECT_LOGIN_FOLLOW = reverse('users:login')+'?next=' + FOLLOW_USER
-REDIRECT_LOGIN_UNFOLLOW = reverse('users:login')+'?next=' + UNFOLLOW_USER
-REDIRECT_LOGIN_FOLLOW_INDEX = reverse('users:login')+'?next=' + FOLLOW
+REDIRECT_LOGIN_POST_CREATE = reverse('users:login') + '?next=' + POST_CREATE
+REDIRECT_LOGIN_FOLLOW = reverse('users:login') + '?next=' + FOLLOW_USER
+REDIRECT_LOGIN_UNFOLLOW = reverse('users:login') + '?next=' + UNFOLLOW_USER
+REDIRECT_LOGIN_FOLLOW_INDEX = reverse('users:login') + '?next=' + FOLLOW
 UNEXISTING_PAGE = '/unexisting_page/'
 
 
@@ -41,8 +41,7 @@ class PostURLTests(TestCase):
         cls.POST_DETAIL = reverse('posts:post_detail', args=[cls.post.id])
         cls.POST_EDIT = reverse('posts:post_edit', args=[cls.post.id])
         cls.REDIRECT_LOGIN_POST_EDIT = reverse(
-            'users:login'
-        )+'?next=' + cls.POST_EDIT
+            'users:login') + '?next=' + cls.POST_EDIT
         cls.author = Client()
         cls.author.force_login(cls.user)
         cls.another_user = Client()
