@@ -29,9 +29,13 @@ def group_posts(request, slug):
 def profile(request, username):
     author = get_object_or_404(User, username=username)
     page_obj = get_page_context(author.posts.all(), request)
-    following = request.user.is_authenticated and Follow.objects.filter(
-        user=request.user, author=author
-    ).exists()
+    following = (
+        request.user.is_authenticated
+        and request.user != author
+        and Follow.objects.filter(
+            user=request.user,
+            author=author).exists()
+    )
     context = {
         'author': author,
         'page_obj': page_obj,
@@ -80,20 +84,16 @@ def post_create(request):
 @login_required
 def post_edit(request, post_id):
     edit_post = get_object_or_404(Post, id=post_id)
-
     if request.user != edit_post.author:
         return redirect('posts:post_detail', post_id)
-
     form = PostForm(
         request.POST or None,
         files=request.FILES or None,
         instance=edit_post
     )
-
     if form.is_valid():
         form.save()
         return redirect('posts:post_detail', post_id)
-
     context = {
         'form': form,
         'edit_post': edit_post,

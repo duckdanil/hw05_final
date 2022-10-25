@@ -9,14 +9,18 @@ from django.urls import reverse
 
 from ..models import Group, Post, User, Follow
 
+TEST_USERNAME = 'test_username'
+TEST_USERNAME_2 = 'test_username_2'
+TEST_SLUG = 'test_slug'
+TEST_SLUG_2 = 'test_slug_2'
 INDEX = reverse('posts:index')
 POST_CREATE = reverse('posts:post_create')
-GROUP_LIST = reverse('posts:group_list', args=['test_slug'])
-GROUP_LIST_2 = reverse('posts:group_list', args=['test_slug_2'])
-PROFILE = reverse('posts:profile', args=['auth'])
+GROUP_LIST = reverse('posts:group_list', args=[TEST_SLUG])
+GROUP_LIST_2 = reverse('posts:group_list', args=[TEST_SLUG_2])
+PROFILE = reverse('posts:profile', args=[TEST_USERNAME])
 FOLLOW = reverse('posts:follow_index')
-FOLLOW_USER = reverse('posts:profile_follow', args=['auth_2'])
-UNFOLLOW_USER = reverse('posts:profile_unfollow', args=['auth'])
+FOLLOW_USER = reverse('posts:profile_follow', args=[TEST_USERNAME_2])
+UNFOLLOW_USER = reverse('posts:profile_unfollow', args=[TEST_USERNAME])
 TEMP_MEDIA_ROOT = tempfile.mkdtemp(dir=settings.BASE_DIR)
 IMAGE = (
     b'\x47\x49\x46\x38\x39\x61\x02\x00'
@@ -38,19 +42,19 @@ class PostPagesTest(TestCase):
     @classmethod
     def setUpClass(cls):
         super().setUpClass()
-        cls.user = User.objects.create_user(username='auth')
-        cls.user_2 = User.objects.create_user(username='auth_2')
+        cls.user = User.objects.create_user(username=TEST_USERNAME)
+        cls.user_2 = User.objects.create_user(username=TEST_USERNAME_2)
         Follow.objects.create(
             user=cls.user_2,
             author=cls.user
         )
         cls.group = Group.objects.create(
-            slug='test_slug',
+            slug=TEST_SLUG,
             title='Тестовая группа',
             description='Тестовое описание',
         )
         cls.group_2 = Group.objects.create(
-            slug='test_slug_2',
+            slug=TEST_SLUG_2,
             title='Тестовая группа_2',
         )
         cls.post = Post.objects.create(
@@ -94,8 +98,9 @@ class PostPagesTest(TestCase):
                 self.assertEqual(post.group, self.post.group)
                 self.assertEqual(post.image, self.post.image)
 
-    def test_post_another_group(self):
-        """Пост не попал на чужую Групп-ленту."""
+    def test_post_not_appear_another_group_and_another_follow(self):
+        """Пост не появляется в group_list и follow_index, для которых
+        не предназначен."""
         urls = (GROUP_LIST_2, FOLLOW)
         for url in urls:
             with self.subTest(url=url):
@@ -127,13 +132,13 @@ class PostPagesTest(TestCase):
                 group=self.group,
                 text=f'Тестовый пост {i}',
             )
-            for i in range(settings.POSTS_PER_PAGES + 3)
+            for i in range(settings.POSTS_PER_PAGE + 3)
         )
         pages = [
-            [INDEX, settings.POSTS_PER_PAGES],
-            [GROUP_LIST, settings.POSTS_PER_PAGES],
-            [PROFILE, settings.POSTS_PER_PAGES],
-            [FOLLOW, settings.POSTS_PER_PAGES],
+            [INDEX, settings.POSTS_PER_PAGE],
+            [GROUP_LIST, settings.POSTS_PER_PAGE],
+            [PROFILE, settings.POSTS_PER_PAGE],
+            [FOLLOW, settings.POSTS_PER_PAGE],
             [f'{INDEX}?page=2', 3],
             [f'{GROUP_LIST}?page=2', 3],
             [f'{PROFILE}?page=2', 3],
@@ -177,13 +182,3 @@ class PostPagesTest(TestCase):
                 author=self.user
             ).exists()
         )
-
-    def test_notfollow_on_authors(self):
-        """Проверка записей у тех кто не подписан."""
-        response = self.authorized_client.get(FOLLOW)
-        self.assertNotIn(self.post, response.context['page_obj'])
-
-    def test_follow_on_authors(self):
-        """Проверка записей у тех кто подписан."""
-        response = self.authorized_client_2.get(FOLLOW)
-        self.assertIn(self.post, response.context['page_obj'])

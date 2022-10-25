@@ -2,7 +2,8 @@
 {% block title %}Профайл пользователя {{ post.author }}{% endblock %}
 {% block content %}
   <div class="container py-5">
-        <h2>Все посты пользователя {{ author.first_name }} {{ author.last_name }} </h1>
+        <h2>Все посты пользователя {{ author.first_name }} {{ author.last_name }} </h2>
+        <h2>Никнейм {{ author }} </h2>
         <h4>Всего постов: {{ author.posts.count }} </h4>
         <h4>Комментарии: {{ author.comments.count }}</h4>  
         <h4>Подписчики: {{ author.following.count }}</h4>  
@@ -19,7 +20,7 @@
           {% endif %}
         {% endif %}  
         {% for post in page_obj %}
-          {% include 'posts/includes/post.html' %}
+          {% include 'posts/includes/post.html' with without_author_info=True %}
           {% if not forloop.last %}
             <hr>
           {% endif %}

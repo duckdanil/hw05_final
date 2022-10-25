@@ -10,13 +10,18 @@ from django import forms
 
 from ..models import Post, Group, User, Comment
 
-
+TEST_USERNAME = 'test_username'
+TEST_USERNAME_2 = 'test_username_2'
+TEST_SLUG = 'test_slug'
+TEST_SLUG_2 = 'test_slug_2'
+LOGIN = reverse('users:login')
+NEXT = '?next='
 INDEX = reverse('posts:index')
 POST_CREATE = reverse('posts:post_create')
-GROUP_LIST = reverse('posts:group_list', args=['test_slug'])
-GROUP_LIST_2 = reverse('posts:group_list', args=['test_slug_2'])
-PROFILE = reverse('posts:profile', args=['auth'])
-REDIRECT_LOGIN_POST_CREATE = reverse('users:login') + '?next=' + POST_CREATE
+GROUP_LIST = reverse('posts:group_list', args=[TEST_SLUG])
+GROUP_LIST_2 = reverse('posts:group_list', args=[TEST_SLUG_2])
+PROFILE = reverse('posts:profile', args=[TEST_USERNAME])
+REDIRECT_LOGIN_POST_CREATE = f'{LOGIN}{NEXT}{POST_CREATE}'
 TEMP_MEDIA_ROOT = tempfile.mkdtemp(dir=settings.BASE_DIR)
 IMAGE = (
     b'\x47\x49\x46\x38\x39\x61\x02\x00'
@@ -44,15 +49,15 @@ class PostFormsTests(TestCase):
     @classmethod
     def setUpClass(cls):
         super().setUpClass()
-        cls.user = User.objects.create_user(username='auth')
-        cls.user_2 = User.objects.create_user(username='auth_2')
+        cls.user = User.objects.create_user(username=TEST_USERNAME)
+        cls.user_2 = User.objects.create_user(username=TEST_USERNAME_2)
         cls.group = Group.objects.create(
-            slug='test_slug',
+            slug=TEST_SLUG,
             title='Тестовый заголовок',
             description='Описание',
         )
         cls.group_2 = Group.objects.create(
-            slug='test_slug_2',
+            slug=TEST_SLUG_2,
             title='Тестовый заголовок_2',
             description='Описание',
         )
@@ -64,10 +69,8 @@ class PostFormsTests(TestCase):
         cls.POST_DETAIL = reverse('posts:post_detail', args=[cls.post.id])
         cls.POST_EDIT = reverse('posts:post_edit', args=[cls.post.id])
         cls.COMMENT = reverse('posts:add_comment', args=[cls.post.id])
-        cls.REDIRECT_POST_COMMENT = reverse(
-            'users:login') + '?next=' + cls.COMMENT
-        cls.REDIRECT_POST_EDIT = reverse(
-            'users:login') + '?next=' + cls.POST_EDIT
+        cls.REDIRECT_POST_COMMENT = f'{LOGIN}{NEXT}{cls.COMMENT}'
+        cls.REDIRECT_POST_EDIT = f'{LOGIN}{NEXT}{cls.POST_EDIT}'
         cls.authorized_client = Client()
         cls.authorized_client.force_login(cls.user)
         cls.authorized_client_2 = Client()

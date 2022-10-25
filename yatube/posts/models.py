@@ -13,7 +13,7 @@ class Group(models.Model):
     slug = models.SlugField(
         max_length=200,
         unique=True,
-        verbose_name='Короткая ссылка'
+        verbose_name='Строка идентификатор'
     )
     description = models.TextField(
         max_length=400,
@@ -79,7 +79,7 @@ class Comment(models.Model):
         related_name='comments',
         verbose_name='Автор')
     text = models.TextField(
-        verbose_name='Текст Коментария')
+        verbose_name='Текст')
     created = models.DateTimeField(
         auto_now_add=True,
         verbose_name='Дата создания')
@@ -88,6 +88,9 @@ class Comment(models.Model):
         ordering = ['-created']
         verbose_name_plural = 'Коментарии'
         verbose_name = 'Коментарий'
+
+    def __str__(self):
+        return self.text[:15]    
 
 
 class Follow(models.Model):
@@ -108,3 +111,6 @@ class Follow(models.Model):
         constraints = [
             UniqueConstraint(fields=['author', 'user'], name='unique_follow')
         ]
+
+    def __str__(self):
+        return f'{self.user} подписался на {self.author}'    

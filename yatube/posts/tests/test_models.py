@@ -8,6 +8,11 @@ class PostModelTest(TestCase):
     def setUpClass(cls):
         super().setUpClass()
         cls.user = User.objects.create_user(username='auth')
+        cls.user2 = User.objects.create_user(username='auth2')
+        cls.follow = Follow.objects.create(
+            user=cls.user,
+            author=cls.user2,
+        )
         cls.post = Post.objects.create(
             author=cls.user,
             text='Тестовый пост больше 15 символов',
@@ -17,14 +22,29 @@ class PostModelTest(TestCase):
             slug='Тестовый слаг',
             description='Тестовый описание'
         )
+        cls.comment = Comment.objects.create(
+            text='Тестовый комментарий больше 15 символов',
+            author=cls.user,
+            post=cls.post,
+        )
 
-    def test_models_str_post_group(self):
+    def test_models_str_post_(self):
         """Проверяем, что корректно работает __str__ у post """
         self.assertEqual(self.post.text[:15], str(self.post))
 
     def test_models_str_group(self):
         """Проверяем, что корректно работает __str__ у group."""
         self.assertEqual(self.group.title, str(self.group))
+
+    def test_models_str_comment(self):
+        """Проверка, что корректно работает __str__ у сomment."""
+        self.assertEqual(self.comment.text[:15], str(self.comment))
+
+    def test_models_str_follow(self):
+        """Проверка, что корректно работает __str__ у follow."""
+        self.assertEqual(
+            f'{self.follow.user} подписался на {self.follow.author}',
+            str(self.follow))
 
     def test_post_verbose_name(self):
         """Проверка verbose_name у post."""
@@ -56,7 +76,7 @@ class PostModelTest(TestCase):
             'post': 'Пост',
             'created': 'Дата создания',
             'author': 'Автор',
-            'text': 'Текст Коментария',
+            'text': 'Текст',
         }
         for value, expected in field_verboses.items():
             with self.subTest(value=value):
