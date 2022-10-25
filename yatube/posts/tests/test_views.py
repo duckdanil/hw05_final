@@ -161,9 +161,9 @@ class PostPagesTest(TestCase):
 
     def test_user_follow(self):
         """Проверка подписки на пользователей."""
-        follow_count = Follow.objects.count()
+        Follow.objects.all().delete
         self.authorized_client.get(FOLLOW_USER)
-        self.assertEqual(Follow.objects.count(), follow_count + 1)
+        self.assertEqual(Follow.objects.filter(author=self.user_2).count(), 1)
         self.assertTrue(
             Follow.objects.filter(
                 user=self.user,
@@ -174,6 +174,12 @@ class PostPagesTest(TestCase):
     def test_user_unfollow(self):
         """Проверка отписки от пользователей."""
         follow_count = Follow.objects.count()
+        self.assertTrue(
+            Follow.objects.filter(
+                user=self.user_2,
+                author=self.user
+            ).exists()
+        )
         self.authorized_client_2.get(UNFOLLOW_USER)
         self.assertEqual(Follow.objects.count(), follow_count - 1)
         self.assertFalse(

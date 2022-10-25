@@ -43,7 +43,8 @@ class PostModelTest(TestCase):
     def test_models_str_follow(self):
         """Проверка, что корректно работает __str__ у follow."""
         self.assertEqual(
-            f'{self.follow.user} подписался на {self.follow.author}',
+            f'{self.follow.user.username}'
+            f' подписался на {self.follow.author.username}',
             str(self.follow))
 
     def test_post_verbose_name(self):

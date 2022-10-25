@@ -13,7 +13,7 @@ class Group(models.Model):
     slug = models.SlugField(
         max_length=200,
         unique=True,
-        verbose_name='Строка идентификатор'
+        verbose_name='Идентификатор'
     )
     description = models.TextField(
         max_length=400,
@@ -113,4 +113,4 @@ class Follow(models.Model):
         ]
 
     def __str__(self):
-        return f'{self.user} подписался на {self.author}'
+        return f'{self.user.username} подписался на {self.author.username}'
