@@ -90,7 +90,7 @@ class Comment(models.Model):
         verbose_name = 'Коментарий'
 
     def __str__(self):
-        return self.text[:15]    
+        return self.text[:15]
 
 
 class Follow(models.Model):
@@ -113,4 +113,4 @@ class Follow(models.Model):
         ]
 
     def __str__(self):
-        return f'{self.user} подписался на {self.author}'    
+        return f'{self.user} подписался на {self.author}'
