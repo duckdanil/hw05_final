@@ -129,6 +129,8 @@ MEDIA_URL = '/media/'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 
 ALLOWED_HOSTS = [
+    'www.duckdanil.pythonanywhere.com',
+    'duckdanil.pythonanywhere.com',
     'localhost',
     '127.0.0.1',
     '[::1]',
